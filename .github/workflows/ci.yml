@@ -29,11 +29,12 @@ jobs:
       matrix:
         swift: ["5.3", "6.4"]
 
-    container:
-      image: swift:${{ matrix.swift }}
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build and Test
-        run: swift test --enable-test-discovery
+        env:
+          SWIFT_VERSION: ${{ matrix.swift }}
+        run: |
+          docker run --rm --volume "$GITHUB_WORKSPACE:/src" --workdir /src \
+            "swift:$SWIFT_VERSION" swift test --enable-test-discovery
